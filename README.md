@@ -32,7 +32,7 @@
 1. 호스트가 룸을 등록한다.
 1. 호스트가 룸을 삭제한다.
 3. 게스트가 룸을 검색한다.
-4. 게스트가 호텔을 선택하여 사용 예약한다.
+4. 게스트가 룸을 선택하여 사용 예약한다.
 5. 게스트가 결제한다. (Sync, 결제서비스)
 6. 결제가 완료되면, 결제 & 예약 내용을 게스트에게 알림을 전송한다. (Async, 알림서비스)
 7. 예약 내역을 호스트에게 전달한다.
@@ -148,7 +148,7 @@
 ![image](https://user-images.githubusercontent.com/45786659/118963396-5f057b00-b9a1-11eb-9289-909a85d38d82.png)
 
     - 도메인 서열 분리 
-        - Core Domain:  숙소, 예약 : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 1주일 1회 미만
+        - Core Domain:  룸, 예약 : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 1주일 1회 미만
         - Supporting Domain:   알림, 마이페이지 : 경쟁력을 내기위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
         - General Domain:   결제 : 결제서비스로 3rd Party 외부 서비스를 사용하는 것이 경쟁력이 높음 (핑크색으로 이후 전환할 예정)
 
@@ -174,7 +174,7 @@
 ![image](https://user-images.githubusercontent.com/45786659/118925428-b2fc6980-b979-11eb-9c07-97f79c70d1b4.png)
 
     - (ok) 게스트가 룸을 검색한다.
-    - (ok) 게스트가 호텔을 선택하여 사용 예약한다.
+    - (ok) 게스트가 룸을 선택하여 사용 예약한다.
     - (ok) 게스트가 결제한다. (Sync, 결제서비스)
     - (ok) 결제가 완료되면, 결제 & 예약 내용을 게스트에게 알림을 전송한다. (Async, 알림서비스)
     - (ok) 예약 내역을 호스트에게 전달한다.
@@ -208,28 +208,40 @@
     - 서브 도메인과 바운디드 컨텍스트의 분리:  각 팀의 KPI 별로 아래와 같이 관심 구현 스토리를 나눠가짐
 
 
-# (to-do)구현:
+# 구현:
 
-분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트와 파이선으로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 808n 이다)
+분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 배포는 아래와 같이 수행한다.
 
 ```
-# (to-do)eks cluster 생성
-eksctl create cluster --name team4-cluseter --version 1.15 --nodegroup-name standard-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 4
+# eks cluster 생성
+eksctl create cluster --name example-hotel-booking --version 1.16 --nodegroup-name standard-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 4
 
-# (to-do)eks cluster 설정
-aws eks --region ap-northeast-2 update-kubeconfig --name team4-cluseter
+# eks cluster 설정
+aws eks --region ap-northeast-1 update-kubeconfig --name example-hotel-booking
 kubectl config current-context
 
-# (to-do)metric server 설치
+# metric server 설치
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
 
-# (to-do)kafka 설치
-helm install --name my-kafka --namespace kafka incubator/kafka
+# Helm 설치
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+(Helm 에게 권한을 부여하고 초기화)
+kubectl --namespace kube-system create sa tiller
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller
 
-# (to-do)istio 설치
+# Kafka 설치
+helm repo update
+helm repo add bitnami https://charts.bitnami.com/bitnami
+kubectl create ns kafka
+helm install my-kafka bitnami/kafka --namespace kafka
+
+# istio 설치
 kubectl apply -f install/kubernetes/istio-demo.yaml
 
-# (to-do)kiali service type 변경
+# kiali service type 변경
 kubectl edit service/kiali -n istio-system
 (ClusterIP -> LoadBalancer)
 
@@ -267,7 +279,7 @@ $ kubectl edit service/gateway -n myhotel
 
 ![image](https://user-images.githubusercontent.com/45786659/118969712-595f6380-b9a8-11eb-947a-ca627e5e15e6.png)
 
-![image](https://user-images.githubusercontent.com/45786659/118969901-96c3f100-b9a8-11eb-9585-920fcc04fa38.png)
+![image](https://user-images.githubusercontent.com/45786659/118971988-04711c80-b9ab-11eb-800b-be935df5235d.png)
 
 
 
@@ -390,125 +402,83 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Long>{
 
 }
 ```
-- (to-do)적용 후 REST API 의 테스트
+- 적용 후 REST API 의 테스트
 ```
-# 숙소 서비스의 등록처리
-http POST http://room:8080/rooms name=호텔 price=1000 address=서울 host=Superman
+# 룸 등록처리
+http POST http://room:8080/rooms price=1500
 
-# 예약 서비스의 예약처리
-http POST http://booking:8080/bookings roomId=1 name=호텔 price=1000 address=서울 host=Superman guest=배트맨 usedate=20201010
+# 예약처리
+http POST http://book:8080/books roomId=1 price=1000 startDate=20210505 endDate=20210508
 
 # 예약 상태 확인
-http http://booking:8080/bookings/1
+http http://book:8080/books/1
 
 ```
 
 
-## (to-do)폴리글랏 퍼시스턴스
+## (포기?)폴리글랏 퍼시스턴스
 
-앱프런트 (app) 는 서비스 특성상 많은 사용자의 유입과 상품 정보의 다양한 콘텐츠를 저장해야 하는 특징으로 인해 RDB 보다는 Document DB / NoSQL 계열의 데이터베이스인 Mongo DB 를 사용하기로 하였다. 이를 위해 order 의 선언에는 @Entity 가 아닌 @Document 로 마킹되었으며, 별다른 작업없이 기존의 Entity Pattern 과 Repository Pattern 적용과 데이터베이스 제품의 설정 (application.yml) 만으로 MongoDB 에 부착시켰다
-
-```
-# Order.java
-
-package fooddelivery;
-
-@Document
-public class Order {
-
-    private String id; // mongo db 적용시엔 id 는 고정값으로 key가 자동 발급되는 필드기 때문에 @Id 나 @GeneratedValue 를 주지 않아도 된다.
-    private String item;
-    private Integer 수량;
-
-}
+각 마이크로서비스의 특성에 따라 데이터 저장소를 RDB, DocumentDB/NoSQL 등 다양하게 사용할 수 있지만, 시간적/환경적 특성상 모두 H2 메모리DB를 적용하였다.
 
 
-# 주문Repository.java
-package fooddelivery;
+## (포기?)폴리글랏 프로그래밍
 
-public interface 주문Repository extends JpaRepository<Order, UUID>{
-}
+각 마이크로서비스의 특성에 따라 다양한 프로그래밍 언어를 사용하여 구현할 수 있지만, 시간적/환경적 특성상 Java를 이용하여 구현하였다.
 
-# application.yml
 
-  data:
-    mongodb:
-      host: mongodb.default.svc.cluster.local
-    database: mongo-example
+## 동기식 호출 과 Fallback 처리
+
+분석단계에서의 조건 중 하나로 예약(book)->결제(pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
+
+- 결제 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
+# (book) PaymentService.java 
 
-## (to-do)폴리글랏 프로그래밍
+@FeignClient(name="pay", url="http://pay:8080")
+public interface PaymentService {
 
-고객관리 서비스(customer)의 시나리오인 주문상태, 배달상태 변경에 따라 고객에게 카톡메시지 보내는 기능의 구현 파트는 해당 팀이 python 을 이용하여 구현하기로 하였다. 해당 파이썬 구현체는 각 이벤트를 수신하여 처리하는 Kafka consumer 로 구현되었고 코드는 다음과 같다:
-```
-from flask import Flask
-from redis import Redis, RedisError
-from kafka import KafkaConsumer
-import os
-import socket
-
-
-# To consume latest messages and auto-commit offsets
-consumer = KafkaConsumer('fooddelivery',
-                         group_id='',
-                         bootstrap_servers=['localhost:9092'])
-for message in consumer:
-    print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
-                                          message.offset, message.key,
-                                          message.value))
-
-    # 카톡호출 API
-```
-
-파이선 애플리케이션을 컴파일하고 실행하기 위한 도커파일은 아래와 같다 (운영단계에서 할일인가? 아니다 여기 까지가 개발자가 할일이다. Immutable Image):
-```
-FROM python:2.7-slim
-WORKDIR /app
-ADD . /app
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
-ENV NAME World
-EXPOSE 8090
-CMD ["python", "policy-handler.py"]
-```
-
-
-## (to-do)동기식 호출 과 Fallback 처리
-
-분석단계에서의 조건 중 하나로 주문(app)->결제(pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
-
-- 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
-
-```
-# (app) 결제이력Service.java
-
-package fooddelivery.external;
-
-@FeignClient(name="pay", url="http://localhost:8082")//, fallback = 결제이력ServiceFallback.class)
-public interface 결제이력Service {
-
-    @RequestMapping(method= RequestMethod.POST, path="/결제이력s")
-    public void 결제(@RequestBody 결제이력 pay);
+    @RequestMapping(method= RequestMethod.GET, path="/payments")
+    public void pay(@RequestBody Payment payment);
 
 }
 ```
 
-- 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
+- 예약을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
-# Order.java (Entity)
+@Entity
+@Table(name="Book_table")
+public class Book {
+    
+    ...
 
     @PostPersist
     public void onPostPersist(){
+        {
 
-        fooddelivery.external.결제이력 pay = new fooddelivery.external.결제이력();
-        pay.setOrderId(getOrderId());
-        
-        Application.applicationContext.getBean(fooddelivery.external.결제이력Service.class)
-                .결제(pay);
-    }
+            intensiveteam.external.Payment payment = new intensiveteam.external.Payment();
+            payment.setBookId(getId());
+            payment.setRoomId(getRoomId());
+            payment.setGuestId(getGuestId());
+            payment.setPrice(getPrice());
+            payment.setHostId(getHostId());
+            payment.setStartDate(getStartDate());
+            payment.setEndDate(getEndDate());
+            payment.setStatus("PayApproved");
+
+            // mappings goes here
+            try {
+                 BookApplication.applicationContext.getBean(intensiveteam.external.PaymentService.class)
+                    .pay(payment);
+            }catch(Exception e) {
+                throw new RuntimeException("결제서비스 호출 실패입니다.");
+            }
+        }
+
+}
 ```
 
-- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
+- (to-do)동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
 
 
 ```
@@ -532,73 +502,106 @@ http localhost:8081/orders item=피자 storeId=2   #Success
 
 
 
-## (to-do)비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
+## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
 
 
-결제가 이루어진 후에 상점시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여 상점 시스템의 처리를 위하여 결제주문이 블로킹 되지 않아도록 처리한다.
+결제가 이루어진 후에 알림 처리는 동기식이 아니라 비 동기식으로 처리하여 알림 시스템의 처리를 위하여 예약 블로킹 되지 않아도록 처리한다.
  
-- 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
+- 이를 위하여 예약관리, 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
  
 ```
-package fooddelivery;
-
 @Entity
-@Table(name="결제이력_table")
-public class 결제이력 {
+@Table(name="Payment_table")
+public class Payment {
 
- ...
-    @PrePersist
-    public void onPrePersist(){
-        결제승인됨 결제승인됨 = new 결제승인됨();
-        BeanUtils.copyProperties(this, 결제승인됨);
-        결제승인됨.publish();
+    ...
+
+    @PostPersist
+    public void onPostPersist(){
+        PaymentApproved paymentApproved = new PaymentApproved();
+        BeanUtils.copyProperties(this, paymentApproved);
+        paymentApproved.publishAfterCommit();
+
+
     }
 
 }
 ```
-- 상점 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- 알림 서비스에서는 예약완료, 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler를 구현한다:
 
 ```
-package fooddelivery;
-
-...
-
 @Service
 public class PolicyHandler{
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenever결제승인됨_주문정보받음(@Payload 결제승인됨 결제승인됨){
+    public void wheneverPaymentApproved_Notify(@Payload PaymentApproved paymentApproved){
 
-        if(결제승인됨.isMe()){
-            System.out.println("##### listener 주문정보받음 : " + 결제승인됨.toJson());
-            // 주문 정보를 받았으니, 요리를 슬슬 시작해야지..
+        if(!paymentApproved.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + paymentApproved.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
             
-        }
+    }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverPaymentCanceled_Notify(@Payload PaymentCanceled paymentCanceled){
+
+        if(!paymentCanceled.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + paymentCanceled.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
+            
+    }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverBookCanceled_Notify(@Payload BookCanceled bookCanceled){
+
+        if(!bookCanceled.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + bookCanceled.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
+            
+    }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverBooked_Notify(@Payload Booked booked){
+
+        if(!booked.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + booked.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
+            
     }
 
-}
-
 ```
-실제 구현을 하자면, 카톡 등으로 점주는 노티를 받고, 요리를 마친후, 주문 상태를 UI에 입력할테니, 우선 주문정보를 DB에 받아놓은 후, 이후 처리는 해당 Aggregate 내에서 하면 되겠다.:
+(to-do)실제 구현을 하자면, 카카오톡 등으로 예약, 결제에 대한 알림을 처리한다:
   
 ```
-  @Autowired 주문관리Repository 주문관리Repository;
-  
-  @StreamListener(KafkaProcessor.INPUT)
-  public void whenever결제승인됨_주문정보받음(@Payload 결제승인됨 결제승인됨){
+@Service
+public class PolicyHandler{
+    @Autowired NotificationRepository notificationRepository;
 
-      if(결제승인됨.isMe()){
-          카톡전송(" 주문이 왔어요! : " + 결제승인됨.toString(), 주문.getStoreId());
-
-          주문관리 주문 = new 주문관리();
-          주문.setId(결제승인됨.getOrderId());
-          주문관리Repository.save(주문);
-      }
-  }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverPaymentApproved_Notify(@Payload PaymentApproved paymentApproved){
+        if(paymentApproved.isMe()) {
+            //System.out.println("\n\n##### listener Notify : " + paymentApproved.toJson() + "\n\n");
+            addNotificationHistory("(guest)" + paymentApproved.getGuest(), "PayApproved");
+            addNotificationHistory("(host)" + paymentApproved.getHost(), "PayApproved");
+        }            
+    }
 
 ```
 
-상점 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 상점시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
+(to-do)상점 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 상점시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
 ```
 # 상점 서비스 (store) 를 잠시 내려놓음 (ctrl+c)
 
@@ -908,23 +911,23 @@ Concurrency:		       96.02
   ![image](https://user-images.githubusercontent.com/487999/79684133-1d6c4300-826a-11ea-94a2-602e61814ebf.png)
 
 
-## (???)마케팅팀의 추가
+## 마케팅팀의 추가
     - KPI: 신규 고객의 유입률 증대와 기존 고객의 충성도 향상
     - 구현계획 마이크로 서비스: 기존 customer 마이크로 서비스를 인수하며, 고객에 음식 및 맛집 추천 서비스 등을 제공할 예정
 
-## (???)이벤트 스토밍 
+## 이벤트 스토밍 
     ![image](https://user-images.githubusercontent.com/487999/79685356-2b729180-8273-11ea-9361-a434065f2249.png)
 
 
-## (???)헥사고날 아키텍처 변화 
+## 헥사고날 아키텍처 변화 
 
 ![image](https://user-images.githubusercontent.com/487999/79685243-1d704100-8272-11ea-8ef6-f4869c509996.png)
 
-## (???)구현  
+## 구현  
 
 기존의 마이크로 서비스에 수정을 발생시키지 않도록 Inbund 요청을 REST 가 아닌 Event 를 Subscribe 하는 방식으로 구현. 기존 마이크로 서비스에 대하여 아키텍처나 기존 마이크로 서비스들의 데이터베이스 구조와 관계없이 추가됨. 
 
-## (???)운영과 Retirement
+## 운영과 Retirement
 
 Request/Response 방식으로 구현하지 않았기 때문에 서비스가 더이상 불필요해져도 Deployment 에서 제거되면 기존 마이크로 서비스에 어떤 영향도 주지 않음.
 
