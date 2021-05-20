@@ -167,6 +167,10 @@
 ![image](https://user-images.githubusercontent.com/43338817/118918987-a4f51b80-b96e-11eb-90bf-effd2c3d28dd.png)
 
     - View Model 추가
+    
+### 호텔 바운디드 컨텍스트 내 PUB/SUB 고려하여 모델 간소화
+
+![image](https://user-images.githubusercontent.com/43338817/118920251-03bb9480-b971-11eb-8b0d-439315192a0d.png)
 
 ### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
 
