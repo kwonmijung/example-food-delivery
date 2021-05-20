@@ -172,18 +172,23 @@
 
 ### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
 
-![image](https://user-images.githubusercontent.com/487999/79684167-3ecd2f00-826a-11ea-806a-957362d197e3.png)
+![image](https://user-images.githubusercontent.com/45786659/118925407-abd55b80-b979-11eb-8fd8-aa1a350a5a85.png)
+    - (ok) 호스트가 룸을 등록한다.
+    - (ok) 호스트가 룸을 삭제한다.
 
-    - 고객이 메뉴를 선택하여 주문한다 (ok)
-    - 고객이 결제한다 (ok)
-    - 주문이 되면 주문 내역이 입점상점주인에게 전달된다 (ok)
-    - 상점주인이 확인하여 요리해서 배달 출발한다 (ok)
+![image](https://user-images.githubusercontent.com/45786659/118925428-b2fc6980-b979-11eb-9c07-97f79c70d1b4.png)
+    - (ok) 게스트가 룸을 검색한다.
+    - (ok) 게스트가 호텔을 선택하여 사용 예약한다.
+    - (ok) 게스트가 결제한다. (Sync, 결제서비스)
+    - (ok) 결제가 완료되면, 결제 & 예약 내용을 게스트에게 알림을 전송한다. (Async, 알림서비스)
+    - (ok) 예약 내역을 호스트에게 전달한다.
+    
+![image](https://user-images.githubusercontent.com/45786659/118925449-bbed3b00-b979-11eb-9127-cd5ebe06825a.png)
+    - (ok) 게스트는 본인의 예약 내용 및 상태를 조회한다.
+    - (ok) 게스트는 본인의 예약을 취소할 수 있다.
+    - (ok) 예약이 취소되면, 결제를 취소한다. (Async, 결제서비스)
+    - (ok) 결제가 취소되면, 결제 취소 내용을 게스트에게 알림을 전송한다. (Async, 알림서비스)
 
-![image](https://user-images.githubusercontent.com/487999/79684170-47256a00-826a-11ea-9777-e16fafff519a.png)
-    - 고객이 주문을 취소할 수 있다 (ok)
-    - 주문이 취소되면 배달이 취소된다 (ok)
-    - 고객이 주문상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok) 
-    - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (?)
 
 
 ### 모델 수정
