@@ -159,12 +159,6 @@
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
 
 ![image](https://user-images.githubusercontent.com/45786659/118963450-6a58a680-b9a1-11eb-9ee3-0a37983b6081.png)
-
-### 완성된 1차 모형
-
-![image](https://user-images.githubusercontent.com/43338817/118918987-a4f51b80-b96e-11eb-90bf-effd2c3d28dd.png)
-
-    - View Model 추가
     
 ### 호텔 바운디드 컨텍스트 내 PUB/SUB 고려하여 모델 간소화
 
