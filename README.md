@@ -226,6 +226,16 @@ cd customer
 python policy-handler.py 
 ```
 
+현황
+```
+![image](https://user-images.githubusercontent.com/45786659/118969619-3b91fe80-b9a8-11eb-9594-eb9fb4efde49.png)
+
+![image](https://user-images.githubusercontent.com/45786659/118969712-595f6380-b9a8-11eb-947a-ca627e5e15e6.png)
+
+![image](https://user-images.githubusercontent.com/45786659/118969901-96c3f100-b9a8-11eb-9585-920fcc04fa38.png)
+```
+
+
 ## DDD 의 적용
 
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 book 마이크로 서비스). 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 
