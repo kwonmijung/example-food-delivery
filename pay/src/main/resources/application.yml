@@ -25,10 +25,10 @@ spring:
       bindings:
         event-in:
           group: pay
-          destination: fooddelivery
+          destination: intensiveteam
           contentType: application/json
         event-out:
-          destination: fooddelivery
+          destination: intensiveteam
           contentType: application/json
 
 logging:
@@ -36,7 +36,7 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 server:
-  port: 8082
+  port: 8081
 ---
 
 spring:
@@ -57,8 +57,8 @@ spring:
       bindings:
         event-in:
           group: pay
-          destination: fooddelivery
+          destination: intensiveteam
           contentType: application/json
         event-out:
-          destination: fooddelivery
+          destination: intensiveteam
           contentType: application/json
