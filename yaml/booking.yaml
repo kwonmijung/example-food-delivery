@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: booking
-  namespace: mybnb
+  namespace: myhotel
   labels:
     app: booking
 spec:
@@ -25,7 +25,7 @@ spec:
             - name: api.url.payment
               valueFrom:
                 configMapKeyRef:
-                  name: mybnb-config
+                  name: myhotel-config
                   key: api.url.payment
           readinessProbe:
             httpGet:
