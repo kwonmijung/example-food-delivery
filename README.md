@@ -158,11 +158,11 @@
 
 ### 폴리시 부착 (괄호는 수행주체, 폴리시 부착을 둘째단계에서 해놔도 상관 없음. 전체 연계가 초기에 드러남)
 
-![image](https://user-images.githubusercontent.com/487999/79683633-5aced180-8266-11ea-8f42-c769eb88dfb1.png)
+![image](https://user-images.githubusercontent.com/43338817/118916348-b8ea4e80-b969-11eb-9586-564d7b9548a4.png)
 
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
 
-![image](https://user-images.githubusercontent.com/487999/79683641-5f938580-8266-11ea-9fdb-4e80ff6642fe.png)
+![image](https://user-images.githubusercontent.com/43338817/118916411-d8817700-b969-11eb-916d-7972b20bf1aa.png)
 
 ### 완성된 1차 모형
 
