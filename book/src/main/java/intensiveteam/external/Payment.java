@@ -1,5 +1,7 @@
 package intensiveteam.external;
 
+import java.util.Date;
+
 public class Payment {
 
     private Long id;

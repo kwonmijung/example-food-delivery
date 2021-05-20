@@ -27,8 +27,8 @@ public class GuestManagementPageViewHandler {
             GuestManagementPage guestManagementPage = new GuestManagementPage();
             // view 객체에 이벤트의 Value 를 set 함
             guestManagementPage.setBookId(booked.getId());
-            guestManagementPage.set(booked.get());
-            guestManagementPage.set(booked.get());
+//            guestManagementPage.set(booked.get());
+//            guestManagementPage.set(booked.get());
             // view 레파지 토리에 save
             guestManagementPageRepository.save(guestManagementPage);
         
