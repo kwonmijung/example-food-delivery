@@ -15,18 +15,36 @@ public class Book {
 
     @PostPersist
     public void onPostPersist(){
+        {
+        
+            intensiveteam.external.Payment payment = new intensiveteam.external.Payment();
+            payment.setBookId(getId());
+            payment.setRoomId(getRoomId());
+            payment.setGuest(getGuest());
+            payment.setPrice(getPrice());
+            payment.setName(getName());
+            payment.setHost(getHost());
+            payment.setAddress(getAddress());
+            payment.setUsedate(getUsedate());
+            payment.setStatus("PayApproved");
+
+            // mappings goes here
+            try {
+                 Application.applicationContext.getBean(intensiveteam.external.PaymentService.class)
+                    .pay(payment);
+            }catch(Exception e) {
+                throw new RuntimeException("결제서비스 호출 실패입니다.");
+            }
+        }
+        
+        // 결제까지 완료되면 최종적으로 예약 완료 이벤트 발생
+        Booked booked = new Booked();
+        BeanUtils.copyProperties(this, booked);
+        booked.setStatus("Booked");
+        booked.publishAfterCommit();
         Booked booked = new Booked();
         BeanUtils.copyProperties(this, booked);
         booked.publishAfterCommit();
-
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-
-        intensiveteam.external.Payment payment = new intensiveteam.external.Payment();
-        // mappings goes here
-        Application.applicationContext.getBean(intensiveteam.external.PaymentService.class)
-            .pay(payment);
-
 
     }
 
