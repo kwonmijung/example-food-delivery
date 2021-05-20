@@ -491,10 +491,8 @@ public interface PaymentService {
 }
 ```
 
-- 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
+- 예약을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
-# Order.java (Entity)
-
 @Entity
 @Table(name="Book_table")
 public class Book {
