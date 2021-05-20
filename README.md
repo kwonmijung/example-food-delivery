@@ -140,7 +140,7 @@
         - 주문시>메뉴카테고리선택됨, 주문시>메뉴검색됨 :  UI 의 이벤트이지, 업무적인 의미의 이벤트가 아니라서 제외
 
 ### 액터, 커맨드 부착하여 읽기 좋게
-![image](https://user-images.githubusercontent.com/487999/79683614-4ee30f80-8266-11ea-9a50-68cdff2dcc46.png)
+![image](https://user-images.githubusercontent.com/43338817/118911650-82103a80-b961-11eb-9d80-6f3ec830e294.png)
 
 ### 어그리게잇으로 묶기
 ![image](https://user-images.githubusercontent.com/487999/79683618-52769680-8266-11ea-9c21-48d6812444ba.png)
