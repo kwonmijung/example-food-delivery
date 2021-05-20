@@ -32,7 +32,7 @@
 1. 호스트가 룸을 등록한다.
 1. 호스트가 룸을 삭제한다.
 3. 게스트가 룸을 검색한다.
-4. 게스트가 호텔을 선택하여 사용 예약한다.
+4. 게스트가 룸을 선택하여 사용 예약한다.
 5. 게스트가 결제한다. (Sync, 결제서비스)
 6. 결제가 완료되면, 결제 & 예약 내용을 게스트에게 알림을 전송한다. (Async, 알림서비스)
 7. 예약 내역을 호스트에게 전달한다.
@@ -148,7 +148,7 @@
 ![image](https://user-images.githubusercontent.com/45786659/118963396-5f057b00-b9a1-11eb-9289-909a85d38d82.png)
 
     - 도메인 서열 분리 
-        - Core Domain:  숙소, 예약 : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 1주일 1회 미만
+        - Core Domain:  룸, 예약 : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 1주일 1회 미만
         - Supporting Domain:   알림, 마이페이지 : 경쟁력을 내기위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
         - General Domain:   결제 : 결제서비스로 3rd Party 외부 서비스를 사용하는 것이 경쟁력이 높음 (핑크색으로 이후 전환할 예정)
 
@@ -174,7 +174,7 @@
 ![image](https://user-images.githubusercontent.com/45786659/118925428-b2fc6980-b979-11eb-9c07-97f79c70d1b4.png)
 
     - (ok) 게스트가 룸을 검색한다.
-    - (ok) 게스트가 호텔을 선택하여 사용 예약한다.
+    - (ok) 게스트가 룸을 선택하여 사용 예약한다.
     - (ok) 게스트가 결제한다. (Sync, 결제서비스)
     - (ok) 결제가 완료되면, 결제 & 예약 내용을 게스트에게 알림을 전송한다. (Async, 알림서비스)
     - (ok) 예약 내역을 호스트에게 전달한다.
@@ -414,14 +414,14 @@ http http://book:8080/books/1
 각 마이크로서비스의 특성에 따라 다양한 프로그래밍 언어를 사용하여 구현할 수 있지만, 시간적/환경적 특성상 Java를 이용하여 구현하였다.
 
 
-## (to-do)동기식 호출 과 Fallback 처리
+## 동기식 호출 과 Fallback 처리
 
 분석단계에서의 조건 중 하나로 예약(book)->결제(pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
 
-- 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
+- 결제 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
-# (app) 결제이력Service.java
+# (book) PaymentService.java 
 
 @FeignClient(name="pay", url="http://pay:8080")
 public interface PaymentService {
@@ -437,9 +437,9 @@ public interface PaymentService {
 @Entity
 @Table(name="Book_table")
 public class Book {
+    
+    ...
 
-   ...
-   
     @PostPersist
     public void onPostPersist(){
         {
@@ -462,12 +462,11 @@ public class Book {
                 throw new RuntimeException("결제서비스 호출 실패입니다.");
             }
         }
-    }
-    
+
 }
 ```
 
-- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
+- (to-do)동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
 
 
 ```
@@ -491,31 +490,32 @@ http localhost:8081/orders item=피자 storeId=2   #Success
 
 
 
-## (to-do)비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
+## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
 
 
-결제가 이루어진 후에 상점시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여 상점 시스템의 처리를 위하여 결제주문이 블로킹 되지 않아도록 처리한다.
+결제가 이루어진 후에 알림 처리는 동기식이 아니라 비 동기식으로 처리하여 알림 시스템의 처리를 위하여 예약 블로킹 되지 않아도록 처리한다.
  
-- 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
+- 이를 위하여 예약관리, 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
  
 ```
-package fooddelivery;
-
 @Entity
-@Table(name="결제이력_table")
-public class 결제이력 {
+@Table(name="Payment_table")
+public class Payment {
 
- ...
-    @PrePersist
-    public void onPrePersist(){
-        결제승인됨 결제승인됨 = new 결제승인됨();
-        BeanUtils.copyProperties(this, 결제승인됨);
-        결제승인됨.publish();
+    ...
+
+    @PostPersist
+    public void onPostPersist(){
+        PaymentApproved paymentApproved = new PaymentApproved();
+        BeanUtils.copyProperties(this, paymentApproved);
+        paymentApproved.publishAfterCommit();
+
+
     }
 
 }
 ```
-- 상점 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- (to-do)알림 서비스에서는 예약완료, 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 
 ```
 package fooddelivery;
@@ -538,7 +538,7 @@ public class PolicyHandler{
 }
 
 ```
-실제 구현을 하자면, 카톡 등으로 점주는 노티를 받고, 요리를 마친후, 주문 상태를 UI에 입력할테니, 우선 주문정보를 DB에 받아놓은 후, 이후 처리는 해당 Aggregate 내에서 하면 되겠다.:
+(to-do)실제 구현을 하자면, 카톡 등으로 점주는 노티를 받고, 요리를 마친후, 주문 상태를 UI에 입력할테니, 우선 주문정보를 DB에 받아놓은 후, 이후 처리는 해당 Aggregate 내에서 하면 되겠다.:
   
 ```
   @Autowired 주문관리Repository 주문관리Repository;
@@ -557,7 +557,7 @@ public class PolicyHandler{
 
 ```
 
-상점 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 상점시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
+(to-do)상점 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 상점시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
 ```
 # 상점 서비스 (store) 를 잠시 내려놓음 (ctrl+c)
 
