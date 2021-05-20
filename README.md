@@ -267,7 +267,7 @@ $ kubectl edit service/gateway -n myhotel
 
 ![image](https://user-images.githubusercontent.com/45786659/118969712-595f6380-b9a8-11eb-947a-ca627e5e15e6.png)
 
-![image](https://user-images.githubusercontent.com/45786659/118969901-96c3f100-b9a8-11eb-9585-920fcc04fa38.png)
+![image](https://user-images.githubusercontent.com/45786659/118971988-04711c80-b9ab-11eb-800b-be935df5235d.png)
 
 
 
