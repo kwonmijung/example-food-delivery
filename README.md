@@ -347,16 +347,16 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Long>{
 
 }
 ```
-- 적용 후 REST API 의 테스트
+- (to-do)적용 후 REST API 의 테스트
 ```
-# app 서비스의 주문처리
-http localhost:8081/orders item="통닭"
+# 숙소 서비스의 등록처리
+http POST http://room:8080/rooms name=호텔 price=1000 address=서울 host=Superman
 
-# store 서비스의 배달처리
-http localhost:8083/주문처리s orderId=1
+# 예약 서비스의 예약처리
+http POST http://booking:8080/bookings roomId=1 name=호텔 price=1000 address=서울 host=Superman guest=배트맨 usedate=20201010
 
-# 주문 상태 확인
-http localhost:8081/orders/1
+# 예약 상태 확인
+http http://booking:8080/bookings/1
 
 ```
 
