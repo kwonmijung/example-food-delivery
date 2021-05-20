@@ -227,13 +227,12 @@ python policy-handler.py
 ```
 
 현황
-```
 ![image](https://user-images.githubusercontent.com/45786659/118969619-3b91fe80-b9a8-11eb-9594-eb9fb4efde49.png)
 
 ![image](https://user-images.githubusercontent.com/45786659/118969712-595f6380-b9a8-11eb-947a-ca627e5e15e6.png)
 
 ![image](https://user-images.githubusercontent.com/45786659/118969901-96c3f100-b9a8-11eb-9585-920fcc04fa38.png)
-```
+
 
 
 ## DDD 의 적용
