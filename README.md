@@ -527,45 +527,77 @@ public class Payment {
 
 }
 ```
-- (to-do)알림 서비스에서는 예약완료, 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- 알림 서비스에서는 예약완료, 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler를 구현한다:
 
 ```
-package fooddelivery;
-
-...
-
 @Service
 public class PolicyHandler{
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenever결제승인됨_주문정보받음(@Payload 결제승인됨 결제승인됨){
+    public void wheneverPaymentApproved_Notify(@Payload PaymentApproved paymentApproved){
 
-        if(결제승인됨.isMe()){
-            System.out.println("##### listener 주문정보받음 : " + 결제승인됨.toJson());
-            // 주문 정보를 받았으니, 요리를 슬슬 시작해야지..
+        if(!paymentApproved.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + paymentApproved.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
             
-        }
+    }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverPaymentCanceled_Notify(@Payload PaymentCanceled paymentCanceled){
+
+        if(!paymentCanceled.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + paymentCanceled.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
+            
+    }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverBookCanceled_Notify(@Payload BookCanceled bookCanceled){
+
+        if(!bookCanceled.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + bookCanceled.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
+            
+    }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverBooked_Notify(@Payload Booked booked){
+
+        if(!booked.validate()) return;
+
+        System.out.println("\n\n##### listener Notify : " + booked.toJson() + "\n\n");
+
+        // Sample Logic //
+        Notification notification = new Notification();
+        notificationRepository.save(notification);
+            
     }
 
-}
-
 ```
-(to-do)실제 구현을 하자면, 카톡 등으로 점주는 노티를 받고, 요리를 마친후, 주문 상태를 UI에 입력할테니, 우선 주문정보를 DB에 받아놓은 후, 이후 처리는 해당 Aggregate 내에서 하면 되겠다.:
+(to-do)실제 구현을 하자면, 카카오톡 등으로 예약, 결제에 대한 알림을 처리한다:
   
 ```
-  @Autowired 주문관리Repository 주문관리Repository;
-  
-  @StreamListener(KafkaProcessor.INPUT)
-  public void whenever결제승인됨_주문정보받음(@Payload 결제승인됨 결제승인됨){
+@Service
+public class PolicyHandler{
+    @Autowired NotificationRepository notificationRepository;
 
-      if(결제승인됨.isMe()){
-          카톡전송(" 주문이 왔어요! : " + 결제승인됨.toString(), 주문.getStoreId());
-
-          주문관리 주문 = new 주문관리();
-          주문.setId(결제승인됨.getOrderId());
-          주문관리Repository.save(주문);
-      }
-  }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverPaymentApproved_Notify(@Payload PaymentApproved paymentApproved){
+        if(paymentApproved.isMe()) {
+            //System.out.println("\n\n##### listener Notify : " + paymentApproved.toJson() + "\n\n");
+            addNotificationHistory("(guest)" + paymentApproved.getGuest(), "PayApproved");
+            addNotificationHistory("(host)" + paymentApproved.getHost(), "PayApproved");
+        }            
+    }
 
 ```
 
