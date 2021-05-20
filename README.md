@@ -213,20 +213,56 @@
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트와 파이선으로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 808n 이다)
 
 ```
-cd app
-mvn spring-boot:run
+# (to-do)eks cluster 생성
+eksctl create cluster --name team4-cluseter --version 1.15 --nodegroup-name standard-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 4
 
-cd pay
-mvn spring-boot:run 
+# (to-do)eks cluster 설정
+aws eks --region ap-northeast-2 update-kubeconfig --name team4-cluseter
+kubectl config current-context
 
-cd store
-mvn spring-boot:run  
+# (to-do)metric server 설치
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
 
-cd customer
-python policy-handler.py 
+# (to-do)kafka 설치
+helm install --name my-kafka --namespace kafka incubator/kafka
+
+# (to-do)istio 설치
+kubectl apply -f install/kubernetes/istio-demo.yaml
+
+# (to-do)kiali service type 변경
+kubectl edit service/kiali -n istio-system
+(ClusterIP -> LoadBalancer)
+
+# myhotel namespace 생성
+kubectl create namespace myhotel
+
+# myhotel istio injection 설정
+kubectl label namespace myhotel istio-injection=enabled
+
+# myhotel image build & push
+cd myhotel/book
+mvn package
+docker build -t 740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book:latest .
+docker push 740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book:latest
+
+# myhotel deploy
+cd myhotel/yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f gateway.yaml
+kubectl apply -f room.yaml
+kubectl apply -f book.yaml
+kubectl apply -f pay.yaml
+kubectl apply -f mypage.yaml
+kubectl apply -f alarm.yaml
+kubectl apply -f siege.yaml
+
+# myhotel gateway service type 변경
+$ kubectl edit service/gateway -n myhotel
+(ClusterIP -> LoadBalancer)
 ```
 
 현황
+
 ![image](https://user-images.githubusercontent.com/45786659/118969619-3b91fe80-b9a8-11eb-9594-eb9fb4efde49.png)
 
 ![image](https://user-images.githubusercontent.com/45786659/118969712-595f6380-b9a8-11eb-947a-ca627e5e15e6.png)
