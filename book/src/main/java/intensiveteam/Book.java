@@ -20,12 +20,11 @@ public class Book {
             intensiveteam.external.Payment payment = new intensiveteam.external.Payment();
             payment.setBookId(getId());
             payment.setRoomId(getRoomId());
-            payment.setGuest(getGuest());
+            payment.setGuestId(getGuestId());
             payment.setPrice(getPrice());
-            payment.setName(getName());
-            payment.setHost(getHost());
-            payment.setAddress(getAddress());
-            payment.setUsedate(getUsedate());
+            payment.setHostId(getHostId());
+            payment.setStartDate(getStartdate());
+            payment.setEndDate(getEndDate());
             payment.setStatus("PayApproved");
 
             // mappings goes here
