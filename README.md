@@ -173,10 +173,12 @@
 ### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
 
 ![image](https://user-images.githubusercontent.com/45786659/118925407-abd55b80-b979-11eb-8fd8-aa1a350a5a85.png)
+
     - (ok) 호스트가 룸을 등록한다.
     - (ok) 호스트가 룸을 삭제한다.
 
 ![image](https://user-images.githubusercontent.com/45786659/118925428-b2fc6980-b979-11eb-9c07-97f79c70d1b4.png)
+
     - (ok) 게스트가 룸을 검색한다.
     - (ok) 게스트가 호텔을 선택하여 사용 예약한다.
     - (ok) 게스트가 결제한다. (Sync, 결제서비스)
@@ -184,6 +186,7 @@
     - (ok) 예약 내역을 호스트에게 전달한다.
     
 ![image](https://user-images.githubusercontent.com/45786659/118925449-bbed3b00-b979-11eb-9127-cd5ebe06825a.png)
+
     - (ok) 게스트는 본인의 예약 내용 및 상태를 조회한다.
     - (ok) 게스트는 본인의 예약을 취소할 수 있다.
     - (ok) 예약이 취소되면, 결제를 취소한다. (Async, 결제서비스)
