@@ -143,7 +143,7 @@
 ![image](https://user-images.githubusercontent.com/43338817/118911650-82103a80-b961-11eb-9d80-6f3ec830e294.png)
 
 ### 어그리게잇으로 묶기
-![image](https://user-images.githubusercontent.com/487999/79683618-52769680-8266-11ea-9c21-48d6812444ba.png)
+![image](https://user-images.githubusercontent.com/43338817/118912269-7e30e800-b962-11eb-9472-81efab29904f.png)
 
     - app의 Order, store 의 주문처리, 결제의 결제이력은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그들 끼리 묶어줌
 
