@@ -166,7 +166,7 @@
 
 ### 완성된 1차 모형
 
-![image](https://user-images.githubusercontent.com/43338817/118917413-caccf100-b96b-11eb-84e8-3624a7b323f0.png)
+![image](https://user-images.githubusercontent.com/43338817/118918596-eb964600-b96d-11eb-9835-9620f159b978.png)
 
     - View Model 추가
 
