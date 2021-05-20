@@ -208,28 +208,40 @@
     - 서브 도메인과 바운디드 컨텍스트의 분리:  각 팀의 KPI 별로 아래와 같이 관심 구현 스토리를 나눠가짐
 
 
-# (to-do)구현:
+# 구현:
 
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 배포는 아래와 같이 수행한다.
 
 ```
-# (to-do)eks cluster 생성
-eksctl create cluster --name team4-cluseter --version 1.15 --nodegroup-name standard-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 4
+# eks cluster 생성
+eksctl create cluster --name example-hotel-booking --version 1.16 --nodegroup-name standard-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 4
 
-# (to-do)eks cluster 설정
-aws eks --region ap-northeast-2 update-kubeconfig --name team4-cluseter
+# eks cluster 설정
+aws eks --region ap-northeast-1 update-kubeconfig --name example-hotel-booking
 kubectl config current-context
 
-# (to-do)metric server 설치
+# metric server 설치
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
 
-# (to-do)kafka 설치
-helm install --name my-kafka --namespace kafka incubator/kafka
+# Helm 설치
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+(Helm 에게 권한을 부여하고 초기화)
+kubectl --namespace kube-system create sa tiller
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller
 
-# (to-do)istio 설치
+# Kafka 설치
+helm repo update
+helm repo add bitnami https://charts.bitnami.com/bitnami
+kubectl create ns kafka
+helm install my-kafka bitnami/kafka --namespace kafka
+
+# istio 설치
 kubectl apply -f install/kubernetes/istio-demo.yaml
 
-# (to-do)kiali service type 변경
+# kiali service type 변경
 kubectl edit service/kiali -n istio-system
 (ClusterIP -> LoadBalancer)
 
