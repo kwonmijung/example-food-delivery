@@ -581,23 +581,6 @@ public class PolicyHandler{
     }
 
 ```
-실제 구현을 하자면, 카카오톡 등으로 예약, 결제에 대한 알림을 처리한다:
-  
-```
-@Service
-public class PolicyHandler{
-    @Autowired NotificationRepository notificationRepository;
-
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPaymentApproved_Notify(@Payload PaymentApproved paymentApproved){
-        if(paymentApproved.isMe()) {
-            //System.out.println("\n\n##### listener Notify : " + paymentApproved.toJson() + "\n\n");
-            addNotificationHistory("(guest)" + paymentApproved.getGuest(), "PayApproved");
-            addNotificationHistory("(host)" + paymentApproved.getHost(), "PayApproved");
-        }            
-    }
-
-```
 
 알림 시스템은 예약/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 알림 시스템이 유지보수로 인해 잠시 내려간 상태라도 예약을 받는데 문제가 없다:
 ```
