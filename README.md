@@ -635,7 +635,7 @@ http http://alarm:8080/notifications # 알림이력조회
 
 ## (to-do)동기식 호출 / 서킷 브레이킹 / 장애격리
 
-* 방식1) 서킷 브레이킹 프레임워크의 선택 : istio-injection + DestinationRule
+### 서킷 브레이킹 프레임워크의 선택 : istio-injection + DestinationRule
 
 - istio-injection 적용 (기 적용 완료)
 ```
