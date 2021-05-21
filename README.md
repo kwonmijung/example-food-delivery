@@ -486,35 +486,36 @@ public class Book {
 # 결제 서비스를 잠시 내려놓음
 cd pay
 $ kubectl delete -f pay.yaml
-
+```
 ![image](https://user-images.githubusercontent.com/45786659/119074505-252c8700-ba2a-11eb-89cd-8151b2b757e4.png)
-
+```
 # 예약처리 (siege 사용)
 http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508  #Fail
 http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508  #Fail
 
 # 예약처리 시 에러 내용
-
+```
 ![image](https://user-images.githubusercontent.com/45786659/119074532-2f4e8580-ba2a-11eb-81dd-1b0b4c058b18.png)
-
+```
 # 결제서비스 재기동전에 아래의 비동기식 호출 기능 점검 테스트 수행 (siege 에서)
 http DELETE http://book:8080/books/8  #Success
 
 # 결과
-
+```
 ![image](https://user-images.githubusercontent.com/45786659/119074657-5e64f700-ba2a-11eb-919c-cc93e6db05dd.png)
-
+```
 # 결제서비스 재기동
 cd pay
 $ kubectl apply -f pay.yaml
-
+```
 ![image](https://user-images.githubusercontent.com/45786659/119074868-c4ea1500-ba2a-11eb-8ae4-7b4c04945b43.png)
-
+```
 # 예약처리 (siege 사용)
 http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508  #Success
 http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508  #Success
 
 # 결과
+```
 ![image](https://user-images.githubusercontent.com/45786659/119074931-e4813d80-ba2a-11eb-9a42-623e8513ddb1.png)
 
 ```
