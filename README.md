@@ -823,7 +823,7 @@ data:
   api.url.payment: http://pay:8080
   alarm.prefix: Hello
 ```
-* booking.yaml (configmap 사용)
+* book.yaml (configmap 사용)
 ```
 apiVersion: apps/v1
 kind: Deployment
