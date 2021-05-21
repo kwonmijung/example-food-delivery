@@ -24,6 +24,7 @@
     - [무정지 재배포](#무정지-재배포)
     - [ConfigMap 사용](#ConfigMap-사용)
     - [Self-healing (Liveness Probe)](#Self-healing-Liveness-Probe)
+    - [CQRS](#CQRS)
   - [신규 개발 조직의 추가](#신규-개발-조직의-추가)
 
 # 서비스 시나리오
@@ -848,3 +849,7 @@ book 서비스의 liveness가 발동되어 2회 retry 시도 한 부분 확인
 kubectl get -n myhotel all
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119081060-311e4600-ba36-11eb-8112-7fd52411f941.png)
+
+
+## CQRS
+<img width="1440" alt="cqrs" src="https://user-images.githubusercontent.com/45786659/119085956-a9d5d000-ba3f-11eb-80a6-7c3210c02823.png">
