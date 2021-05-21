@@ -23,7 +23,7 @@
     - [오토스케일 아웃](#오토스케일-아웃)
     - [무정지 재배포](#무정지-재배포)
     - [ConfigMap 사용](#ConfigMap-사용)
-    - [Self-healing (Liveness Probe)](#Self-healing-(Liveness-Probe))
+    - [Self-healing (Liveness Probe)](#Self-healing-Liveness-Probe)
   - [신규 개발 조직의 추가](#신규-개발-조직의-추가)
 
 # 서비스 시나리오
@@ -992,27 +992,20 @@ deployment.yml 에 Liveness Probe 옵션 설정
             failureThreshold: 5
 ```
 
-kubectl describe pod/book-77998c895-ffbnn -n myhotel
+deployment.yml 에 Liveness Probe 옵션 설정
 
 ```
-Containers:
-  book:
-    Container ID:   docker://22dff5a6bd54a48951dc328db052ca494295dae7a431384b920714a5d6814b43
-    Image:          740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book:latest
-    Image ID:       docker-pullable://740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book@sha256:4918ad3d2dc44648151861f0d94457a02c963823df863a702f9bb05c7ac02261
-    Port:           8080/TCP
-    Host Port:      0/TCP
-    State:          Running
-      Started:      Fri, 21 May 2021 02:21:12 +0000
-    Ready:          True
-    Restart Count:  0
-    Liveness:       http-get http://:8080/actuator/health delay=120s timeout=2s period=5s #success=1 #failure=5
-    Readiness:      http-get http://:8080/actuator/health delay=10s timeout=2s period=5s #success=1 #failure=10
-    Environment:
-      api.url.payment:  <set to the key 'api.url.payment' of config map 'myhotel-config'>  Optional: false
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from default-token-m9sfp (ro)
+kubectl describe pod/book-77998c895-ffbnn -n myhotel
 ```
+![image](https://user-images.githubusercontent.com/45786659/119081115-48f5ca00-ba36-11eb-8a8d-fd4661b23b98.png)
+
+
+book 서비스의 liveness가 발동되어 2회 retry 시도 한 부분 확인
+```
+kubectl get -n myhotel all
+```
+![image](https://user-images.githubusercontent.com/45786659/119081060-311e4600-ba36-11eb-8112-7fd52411f941.png)
+
 
 
 # 신규 개발 조직의 추가
