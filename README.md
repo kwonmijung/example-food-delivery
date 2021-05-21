@@ -691,6 +691,10 @@ kubectl delete -f dr-pay.yaml
 ```
 kubectl autoscale deploy pay --min=1 --max=10 --cpu-percent=15
 ```
+book.yaml 파일 추가 설정
+
+![image](https://user-images.githubusercontent.com/45786659/119083688-64af9f00-ba3b-11eb-9c58-7966c141afee.png)
+
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
 ```
 siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
