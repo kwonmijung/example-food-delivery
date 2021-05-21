@@ -22,6 +22,7 @@
     - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출-서킷-브레이킹-장애격리)
     - [오토스케일 아웃](#오토스케일-아웃)
     - [무정지 재배포](#무정지-재배포)
+    - [ConfigMap 사용](#ConfigMap-사용)
   - [신규 개발 조직의 추가](#신규-개발-조직의-추가)
 
 # 서비스 시나리오
@@ -164,7 +165,7 @@
 
 ![image](https://user-images.githubusercontent.com/43338817/118920251-03bb9480-b971-11eb-8b0d-439315192a0d.png)
 
-### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
+### 기능적/비기능적 요구사항을 커버하는지 검증
 
 ![image](https://user-images.githubusercontent.com/45786659/118925407-abd55b80-b979-11eb-8fd8-aa1a350a5a85.png)
 
@@ -238,18 +239,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 kubectl create ns kafka
 helm install my-kafka bitnami/kafka --namespace kafka
 
-# istio 설치
-kubectl apply -f install/kubernetes/istio-demo.yaml
-
-# kiali service type 변경
-kubectl edit service/kiali -n istio-system
-(ClusterIP -> LoadBalancer)
-
 # myhotel namespace 생성
 kubectl create namespace myhotel
-
-# myhotel istio injection 설정
-kubectl label namespace myhotel istio-injection=enabled
 
 # myhotel image build & push
 cd myhotel/book
@@ -267,10 +258,6 @@ kubectl apply -f pay.yaml
 kubectl apply -f mypage.yaml
 kubectl apply -f alarm.yaml
 kubectl apply -f siege.yaml
-
-# myhotel gateway service type 변경
-$ kubectl edit service/gateway -n myhotel
-(ClusterIP -> LoadBalancer)
 ```
 
 현황
@@ -478,24 +465,35 @@ public class Book {
 }
 ```
 
-- (to-do)동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
+- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
 
 
 ```
-# 결제 (pay) 서비스를 잠시 내려놓음 (ctrl+c)
-
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Fail
-http localhost:8081/orders item=피자 storeId=2   #Fail
-
-#결제서비스 재기동
-cd 결제
-mvn spring-boot:run
-
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Success
-http localhost:8081/orders item=피자 storeId=2   #Success
+# 결제 서비스를 잠시 내려놓음
+cd yaml
+$ kubectl delete -f pay.yaml
 ```
+![image](https://user-images.githubusercontent.com/45786659/119074505-252c8700-ba2a-11eb-89cd-8151b2b757e4.png)
+```
+# 예약처리 (siege 사용)
+http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508  #Fail
+http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508  #Fail
+```
+![image](https://user-images.githubusercontent.com/45786659/119074532-2f4e8580-ba2a-11eb-81dd-1b0b4c058b18.png)
+
+```
+# 결제서비스 재기동
+$ kubectl apply -f pay.yaml
+```
+![image](https://user-images.githubusercontent.com/45786659/119074868-c4ea1500-ba2a-11eb-8ae4-7b4c04945b43.png)
+```
+# 예약처리 (siege 사용)
+http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508  #Success
+http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508  #Success
+```
+![image](https://user-images.githubusercontent.com/45786659/119074931-e4813d80-ba2a-11eb-9a42-623e8513ddb1.png)
+
+
 
 - 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
 
@@ -583,42 +581,43 @@ public class PolicyHandler{
     }
 
 ```
-(to-do)실제 구현을 하자면, 카카오톡 등으로 예약, 결제에 대한 알림을 처리한다:
-  
+
+알림 시스템은 예약/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 알림 시스템이 유지보수로 인해 잠시 내려간 상태라도 예약을 받는데 문제가 없다:
 ```
-@Service
-public class PolicyHandler{
-    @Autowired NotificationRepository notificationRepository;
-
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPaymentApproved_Notify(@Payload PaymentApproved paymentApproved){
-        if(paymentApproved.isMe()) {
-            //System.out.println("\n\n##### listener Notify : " + paymentApproved.toJson() + "\n\n");
-            addNotificationHistory("(guest)" + paymentApproved.getGuest(), "PayApproved");
-            addNotificationHistory("(host)" + paymentApproved.getHost(), "PayApproved");
-        }            
-    }
-
+# 알림 서비스를 잠시 내려놓음
+cd yaml
+kubectl delete -f alarm.yaml
 ```
 
-(to-do)상점 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 상점시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
+![image](https://user-images.githubusercontent.com/45786659/119075963-aedd5400-ba2c-11eb-950b-342bdb58be3d.png)
+
 ```
-# 상점 서비스 (store) 를 잠시 내려놓음 (ctrl+c)
-
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Success
-http localhost:8081/orders item=피자 storeId=2   #Success
-
-#주문상태 확인
-http localhost:8080/orders     # 주문상태 안바뀜 확인
-
-#상점 서비스 기동
-cd 상점
-mvn spring-boot:run
-
-#주문상태 확인
-http localhost:8080/orders     # 모든 주문의 상태가 "배송됨"으로 확인
+# 예약처리 (siege 사용)
+http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508	#Success
+http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508	#Success
 ```
+
+![image](https://user-images.githubusercontent.com/45786659/119076006-c74d6e80-ba2c-11eb-9d70-3a08a5bb3ec0.png)
+
+```
+# 알림이력 확인 (siege 사용)
+http http://alarm:8080/notifications # 알림이력조회 불가
+```
+
+![image](https://user-images.githubusercontent.com/45786659/119076052-daf8d500-ba2c-11eb-81d3-e8a1ddebe287.png)
+
+```
+# 알림 서비스 기동
+kubectl apply -f alarm.yaml
+```
+
+![image](https://user-images.githubusercontent.com/45786659/119076341-5b1f3a80-ba2d-11eb-8a1f-5554c46233cf.png)
+
+```
+# 알림이력 확인 (siege 사용)
+http http://alarm:8080/notifications # 알림이력조회
+```
+![image](https://user-images.githubusercontent.com/45786659/119076408-7722dc00-ba2d-11eb-9a01-766f4dd6f9ca.png)
 
 
 # 운영
@@ -904,6 +903,75 @@ Concurrency:		       96.02
 ```
 
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
+
+## ConfigMap 사용
+
+시스템별로 또는 운영중에 동적으로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리합니다.
+
+* configmap.yaml
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myhotel-config
+  namespace: myhotel
+data:
+  api.url.payment: http://pay:8080
+  alarm.prefix: Hello
+```
+* booking.yaml (configmap 사용)
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book
+  namespace: myhotel
+  labels:
+    app: book
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book
+  template:
+    metadata:
+      labels:
+        app: book
+    spec:
+      containers:
+        - name: book
+          image: 740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: api.url.payment
+              valueFrom:
+                configMapKeyRef:
+                  name: myhotel-config
+                  key: api.url.payment
+          ...
+```
+* kubectl describe pod/book-77998c895-ffbnn -n myhotel
+```
+Containers:
+  book:
+    Container ID:   docker://22dff5a6bd54a48951dc328db052ca494295dae7a431384b920714a5d6814b43
+    Image:          740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book:latest
+    Image ID:       docker-pullable://740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book@sha256:4918ad3d2dc44648151861f0d94457a02c963823df863a702f9bb05c7ac02261
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Fri, 21 May 2021 02:21:12 +0000
+    Ready:          True
+    Restart Count:  0
+    Liveness:       http-get http://:8080/actuator/health delay=120s timeout=2s period=5s #success=1 #failure=5
+    Readiness:      http-get http://:8080/actuator/health delay=10s timeout=2s period=5s #success=1 #failure=10
+    Environment:
+      api.url.payment:  <set to the key 'api.url.payment' of config map 'myhotel-config'>  Optional: false
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-m9sfp (ro)
+```
 
 
 # 신규 개발 조직의 추가
