@@ -689,7 +689,7 @@ kubectl delete -f dr-pay.yaml
 
 - 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
 ```
-kubectl autoscale deploy pay --min=1 --max=10 --cpu-percent=15
+kubectl autoscale deploy pay --min=1 --max=10 --cpu-percent=3
 ```
 book.yaml 파일 추가 설정
 
@@ -697,7 +697,8 @@ book.yaml 파일 추가 설정
 
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
 ```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
+siege -v -c255 -t180S -r10 --content-type "application/json" 'http://book:8080/books POST {"bookId":1, "roomId":1, "price":1000, "hostId":10, "guestId":10, "startDate":20200101, "endDate":20200103}'
+
 ```
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 ```
