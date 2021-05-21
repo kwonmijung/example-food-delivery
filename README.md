@@ -23,6 +23,7 @@
     - [오토스케일 아웃](#오토스케일-아웃)
     - [무정지 재배포](#무정지-재배포)
     - [ConfigMap 사용](#ConfigMap-사용)
+    - [Self-healing (Liveness Probe)](#Self-healing-Liveness-Probe)
   - [신규 개발 조직의 추가](#신규-개발-조직의-추가)
 
 # 서비스 시나리오
@@ -464,6 +465,10 @@ public class Book {
 
 }
 ```
+
+- 동기식 호출로 연결되어 있는 예약(book)->결제(pay) 간의 연결 상황을 Kiali Graph로 확인한 결과 (siege 이용하여 book POST)
+
+![image](https://user-images.githubusercontent.com/43338817/119081473-fec11880-ba36-11eb-83fe-ef94952faef1.png)
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
 
@@ -972,6 +977,39 @@ Containers:
     Mounts:
       /var/run/secrets/kubernetes.io/serviceaccount from default-token-m9sfp (ro)
 ```
+
+## Self-healing (Liveness Probe)
+
+deployment.yml 에 Liveness Probe 옵션 설정
+
+```
+(book/kubernetes/deployment.yml)
+          ...
+          
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+```
+
+book pod에 liveness가 적용된 부분 확인
+
+```
+kubectl describe pod/book-77998c895-ffbnn -n myhotel
+```
+![image](https://user-images.githubusercontent.com/45786659/119081667-6b3c1780-ba37-11eb-881c-197b181a4e43.png)
+
+
+book 서비스의 liveness가 발동되어 2회 retry 시도 한 부분 확인
+```
+kubectl get -n myhotel all
+```
+![image](https://user-images.githubusercontent.com/45786659/119081060-311e4600-ba36-11eb-8112-7fd52411f941.png)
+
 
 
 # 신규 개발 조직의 추가
