@@ -953,29 +953,25 @@ spec:
                   key: api.url.payment
           ...
 ```
-* (to-do)kubectl describe pod/book-77998c895-98nwb -n myhotel
+* kubectl describe pod/book-77998c895-ffbnn -n myhotel
 ```
 Containers:
-  booking:
-    Container ID:   docker://0b90fe0d06629fc367fa83273abecba2724958a0b838c058553d193a86c3e0fe
-    Image:          496278789073.dkr.ecr.ap-northeast-2.amazonaws.com/mybnb-booking:latest
-    Image ID:       docker-pullable://496278789073.dkr.ecr.ap-northeast-2.amazonaws.com/mybnb-booking@sha256:59abe6ec02e165fda1c8e3dbf3e8bcedf7fb5edc53fcffca5f708a70969452f3
+  book:
+    Container ID:   docker://22dff5a6bd54a48951dc328db052ca494295dae7a431384b920714a5d6814b43
+    Image:          740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book:latest
+    Image ID:       docker-pullable://740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/book@sha256:4918ad3d2dc44648151861f0d94457a02c963823df863a702f9bb05c7ac02261
     Port:           8080/TCP
     Host Port:      0/TCP
     State:          Running
-      Started:      Mon, 03 Aug 2020 16:48:56 +0900
+      Started:      Fri, 21 May 2021 02:21:12 +0000
     Ready:          True
     Restart Count:  0
-    Limits:
-      cpu:  500m
-    Requests:
-      cpu:      200m
-    Liveness:   http-get http://:8080/actuator/health delay=120s timeout=2s period=5s #success=1 #failure=5
-    Readiness:  http-get http://:8080/actuator/health delay=10s timeout=2s period=5s #success=1 #failure=10
+    Liveness:       http-get http://:8080/actuator/health delay=120s timeout=2s period=5s #success=1 #failure=5
+    Readiness:      http-get http://:8080/actuator/health delay=10s timeout=2s period=5s #success=1 #failure=10
     Environment:
-      api.url.payment:  <set to the key 'api.url.payment' of config map 'mybnb-config'>  Optional: false
+      api.url.payment:  <set to the key 'api.url.payment' of config map 'myhotel-config'>  Optional: false
     Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from default-token-mrczz (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-m9sfp (ro)
 ```
 
 
