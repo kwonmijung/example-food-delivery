@@ -484,7 +484,7 @@ public class Book {
 
 ```
 # 결제 서비스를 잠시 내려놓음
-cd pay
+cd yaml
 $ kubectl delete -f pay.yaml
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119074505-252c8700-ba2a-11eb-89cd-8151b2b757e4.png)
@@ -492,20 +492,15 @@ $ kubectl delete -f pay.yaml
 # 예약처리 (siege 사용)
 http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508  #Fail
 http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508  #Fail
-
-# 예약처리 시 에러 내용
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119074532-2f4e8580-ba2a-11eb-81dd-1b0b4c058b18.png)
 ```
 # 결제서비스 재기동전에 아래의 비동기식 호출 기능 점검 테스트 수행 (siege 에서)
 http DELETE http://book:8080/books/8  #Success
-
-# 결과
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119074657-5e64f700-ba2a-11eb-919c-cc93e6db05dd.png)
 ```
 # 결제서비스 재기동
-cd pay
 $ kubectl apply -f pay.yaml
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119074868-c4ea1500-ba2a-11eb-8ae4-7b4c04945b43.png)
@@ -513,8 +508,6 @@ $ kubectl apply -f pay.yaml
 # 예약처리 (siege 사용)
 http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508  #Success
 http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508  #Success
-
-# 결과
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119074931-e4813d80-ba2a-11eb-9a42-623e8513ddb1.png)
 
@@ -626,22 +619,40 @@ public class PolicyHandler{
 
 (to-do)상점 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 상점시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
 ```
-# 상점 서비스 (store) 를 잠시 내려놓음 (ctrl+c)
-
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Success
-http localhost:8081/orders item=피자 storeId=2   #Success
-
-#주문상태 확인
-http localhost:8080/orders     # 주문상태 안바뀜 확인
-
-#상점 서비스 기동
-cd 상점
-mvn spring-boot:run
-
-#주문상태 확인
-http localhost:8080/orders     # 모든 주문의 상태가 "배송됨"으로 확인
+# 알림 서비스를 잠시 내려놓음
+cd yaml
+kubectl delete -f alarm.yaml
 ```
+
+![image](https://user-images.githubusercontent.com/45786659/119075963-aedd5400-ba2c-11eb-950b-342bdb58be3d.png)
+
+```
+# 예약처리 (siege 사용)
+http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=20210508	#Success
+http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508	#Success
+```
+
+![image](https://user-images.githubusercontent.com/45786659/119076006-c74d6e80-ba2c-11eb-9d70-3a08a5bb3ec0.png)
+
+```
+# 알림이력 확인 (siege 사용)
+http http://alarm:8080/notifications # 알림이력조회 불가
+```
+
+![image](https://user-images.githubusercontent.com/45786659/119076052-daf8d500-ba2c-11eb-81d3-e8a1ddebe287.png)
+
+```
+# 알림 서비스 기동
+kubectl apply -f alarm.yaml
+```
+
+![image](https://user-images.githubusercontent.com/45786659/119076341-5b1f3a80-ba2d-11eb-8a1f-5554c46233cf.png)
+
+```
+# 알림이력 확인 (siege 사용)
+http http://alarm:8080/notifications # 알림이력조회
+```
+![image](https://user-images.githubusercontent.com/45786659/119076408-7722dc00-ba2d-11eb-9a01-766f4dd6f9ca.png)
 
 
 # 운영
