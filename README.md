@@ -997,7 +997,7 @@ book pod에 liveness가 적용된 부분 확인
 ```
 kubectl describe pod/book-77998c895-ffbnn -n myhotel
 ```
-![image](https://user-images.githubusercontent.com/45786659/119081115-48f5ca00-ba36-11eb-8a8d-fd4661b23b98.png)
+![image](https://user-images.githubusercontent.com/45786659/119081667-6b3c1780-ba37-11eb-881c-197b181a4e43.png)
 
 
 book 서비스의 liveness가 발동되어 2회 retry 시도 한 부분 확인
