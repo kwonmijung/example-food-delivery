@@ -992,7 +992,7 @@ deployment.yml 에 Liveness Probe 옵션 설정
             failureThreshold: 5
 ```
 
-deployment.yml 에 Liveness Probe 옵션 설정
+book pod에 liveness가 적용된 부분 확인
 
 ```
 kubectl describe pod/book-77998c895-ffbnn -n myhotel
