@@ -518,7 +518,7 @@ http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119074931-e4813d80-ba2a-11eb-9a42-623e8513ddb1.png)
 
-```
+
 
 - 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
 
