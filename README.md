@@ -695,21 +695,39 @@ $ kubectl autoscale deploy pay --min=1 --max=10 --cpu-percent=3
 
 ![image](https://user-images.githubusercontent.com/45786659/119083688-64af9f00-ba3b-11eb-9c58-7966c141afee.png)
 
-- CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
+- CB 에서 했던 방식대로 워크로드를 3분 동안 걸어준다.
 ```
 siege -v -c255 -t180S -r10 --content-type "application/json" 'http://book:8080/books POST {"bookId":1, "roomId":1, "price":1000, "hostId":10, "guestId":10, "startDate":20200101, "endDate":20200103}'
-
 ```
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 ```
-kubectl get deploy pay -w
+kubectl get deploy book -w -n myhotel
 ```
 - 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
 ```
-NAME    DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-pay     1         1         1            1           17s
-pay     1         2         1            1           45s
-pay     1         4         1            1           1m
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+book   1/1     1            1           66s
+book   1/4     1            1           2m9s
+book   1/4     1            1           2m9s
+book   1/4     1            1           2m9s
+book   1/4     4            1           2m9s
+book   1/8     4            1           2m24s
+book   1/8     4            1           2m24s
+book   1/8     4            1           2m24s
+book   1/8     8            1           2m24s
+book   1/10    8            1           2m40s
+book   1/10    8            1           2m40s
+book   1/10    8            1           2m40s
+book   1/10    10           1           2m40s
+book   2/10    10           2           3m21s
+book   3/10    10           3           3m26s
+book   4/10    10           4           3m35s
+book   5/10    10           5           3m39s
+book   6/10    10           6           3m41s
+book   7/10    10           7           3m42s
+book   8/10    10           8           3m43s
+book   9/10    10           9           3m54s
+book   10/10   10           10          3m55s
 :
 ```
 - siege 의 로그를 보아도 전체적인 성공률이 높아진 것을 확인 할 수 있다. 
