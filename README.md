@@ -635,6 +635,54 @@ http http://alarm:8080/notifications # 알림이력조회
 
 ## (to-do)동기식 호출 / 서킷 브레이킹 / 장애격리
 
+* 방식1) 서킷 브레이킹 프레임워크의 선택 : istio-injection + DestinationRule
+
+- istio-injection 적용 (기 적용 완료)
+```
+kubectl label namespace myhotel istio-injection=enabled --overwrite
+```
+- 예약, 결제 서비스 모두 아무런 변경 없음
+- 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인:
+- 동시사용자 255명
+- 180초 동안 실시
+```
+$ siege -v -c255 -t180S -r10 --content-type "application/json" 'http://book:8080/books POST {"bookId":1, "roomId":1, "price":1000, "hostId":10, "guestId":10, "startDate":20200101, "endDate":20200103}'
+```
+- 서킷브레이킹을 위한 DestinationRule 적용
+```
+cd myhotel/yaml
+kubectl apply -f dr-pay.yaml
+
+# dr-pay.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: dr-pay
+  namespace: myhotel
+spec:
+  host: pay
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 1
+        maxRequestsPerConnection: 1
+    outlierDetection:
+      interval: 1s
+      consecutiveErrors: 2
+      baseEjectionTime: 10s
+      maxEjectionPercent: 100
+```
+
+- DestinationRule 적용되어 서킷 브레이킹 동작 확인 (Kiali Graph)
+
+![image](https://user-images.githubusercontent.com/43338817/119082429-0bdf0700-ba39-11eb-8f29-b0f934c9c4b5.png)
+
+- 다시 부하 발생하여 DestinationRule 적용 제거하여 정상 처리 확인
+```
+cd myhotel/yaml
+kubectl delete -f dr-pay.yaml
+```
+
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
 
 시나리오는 단말앱(app)-->결제(pay) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
