@@ -239,18 +239,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 kubectl create ns kafka
 helm install my-kafka bitnami/kafka --namespace kafka
 
-# istio 설치
-kubectl apply -f install/kubernetes/istio-demo.yaml
-
-# kiali service type 변경
-kubectl edit service/kiali -n istio-system
-(ClusterIP -> LoadBalancer)
-
 # myhotel namespace 생성
 kubectl create namespace myhotel
-
-# myhotel istio injection 설정
-kubectl label namespace myhotel istio-injection=enabled
 
 # myhotel image build & push
 cd myhotel/book
@@ -268,10 +258,6 @@ kubectl apply -f pay.yaml
 kubectl apply -f mypage.yaml
 kubectl apply -f alarm.yaml
 kubectl apply -f siege.yaml
-
-# myhotel gateway service type 변경
-$ kubectl edit service/gateway -n myhotel
-(ClusterIP -> LoadBalancer)
 ```
 
 현황
