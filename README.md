@@ -732,14 +732,18 @@ book   10/10   10           10          3m55s
 ```
 - siege 의 로그를 보아도 전체적인 성공률이 높아진 것을 확인 할 수 있다. 
 ```
-Transactions:		        5078 hits
-Availability:		       92.45 %
-Elapsed time:		       120 secs
-Data transferred:	        0.34 MB
-Response time:		        5.60 secs
-Transaction rate:	       17.15 trans/sec
-Throughput:		        0.01 MB/sec
-Concurrency:		       96.02
+Transactions:                   9090 hits
+Availability:                  99.98 %
+Elapsed time:                 143.38 secs
+Data transferred:               3.06 MB
+Response time:                  3.88 secs
+Transaction rate:              63.40 trans/sec
+Throughput:                     0.02 MB/sec
+Concurrency:                  245.75
+Successful transactions:        9090
+Failed transactions:               2
+Longest transaction:           34.12
+Shortest transaction:           0.01
 ```
 
 
