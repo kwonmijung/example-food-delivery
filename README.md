@@ -480,11 +480,7 @@ http POST http://book:8080/books roomId=2 price=1500 startDate=20210505 endDate=
 http POST http://book:8080/books roomId=3 price=2000 startDate=20210505 endDate=20210508  #Fail
 ```
 ![image](https://user-images.githubusercontent.com/45786659/119074532-2f4e8580-ba2a-11eb-81dd-1b0b4c058b18.png)
-```
-# 결제서비스 재기동전에 아래의 비동기식 호출 기능 점검 테스트 수행 (siege 에서)
-http DELETE http://book:8080/books/8  #Success
-```
-![image](https://user-images.githubusercontent.com/45786659/119074657-5e64f700-ba2a-11eb-919c-cc93e6db05dd.png)
+
 ```
 # 결제서비스 재기동
 $ kubectl apply -f pay.yaml
