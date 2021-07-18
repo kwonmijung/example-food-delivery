@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: book
-  namespace: myhotel
+  namespace: mycar
   labels:
     app: book
 spec:
@@ -25,7 +25,7 @@ spec:
             - name: api.url.payment
               valueFrom:
                 configMapKeyRef:
-                  name: myhotel-config
+                  name: mycar-config
                   key: api.url.payment
 
 ---
@@ -34,7 +34,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: book
-  namespace: myhotel
+  namespace: mycar
   labels:
     app: book
 spec:

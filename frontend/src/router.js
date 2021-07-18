@@ -7,7 +7,7 @@ Vue.use(Router);
 
 import PaymentManager from "./components/PaymentManager"
 
-import RoomManager from "./components/RoomManager"
+import CarManager from "./components/CarManager"
 
 
 import GuestManagementPage from "./components/GuestManagementPage"
@@ -27,9 +27,9 @@ export default new Router({
             },
 
             {
-                path: '/Room',
-                name: 'RoomManager',
-                component: RoomManager
+                path: '/Car',
+                name: 'CarManager',
+                component: CarManager
             },
 
 

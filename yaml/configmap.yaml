@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: myhotel-config
-  namespace: myhotel
+  name: mycar-config
+  namespace: mycar
 data:
   api.url.payment: http://pay:8080
   alarm.prefix: Hello

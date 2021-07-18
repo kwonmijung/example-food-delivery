@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: room
-  namespace: myhotel
+  name: car
+  namespace: mycar
   labels:
-    app: room
+    app: car
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: room
+      app: car
   template:
     metadata:
       labels:
-        app: room
+        app: car
     spec:
       containers:
-        - name: room
-          image: 740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/room:latest
+        - name: car
+          image: 740569282574.dkr.ecr.ap-northeast-1.amazonaws.com/car:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -43,13 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: room
-  namespace: myhotel
+  name: car
+  namespace: mycar
   labels:
-    app: room
+    app: car
 spec:
   ports:
     - port: 8080
       targetPort: 8080
   selector:
-    app: room
+    app: car

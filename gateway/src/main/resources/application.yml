@@ -12,10 +12,10 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/payments/** 
-        - id: room
+        - id: car
           uri: http://localhost:8082
           predicates:
-            - Path=/rooms/** 
+            - Path=/cars/** 
         - id: mypage
           uri: http://localhost:8083
           predicates:
@@ -51,10 +51,10 @@ spring:
           uri: http://pay:8080
           predicates:
             - Path=/payments/** 
-        - id: room
-          uri: http://room:8080
+        - id: car
+          uri: http://car:8080
           predicates:
-            - Path=/rooms/** 
+            - Path=/cars/** 
         - id: mypage
           uri: http://mypage:8080
           predicates:

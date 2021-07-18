@@ -30,10 +30,10 @@
             BookId :  {{value.bookId }}
           </div>
           <div class="grey--text ml-4" v-if="editMode" style = "margin-top:-20px;">
-            <v-text-field type="number" label="RoomId" v-model="value.roomId"/>
+            <v-text-field type="number" label="CarId" v-model="value.carId"/>
           </div>
           <div class="grey--text ml-4" v-else>
-            RoomId :  {{value.roomId }}
+            CarId :  {{value.carId }}
           </div>
           <div class="grey--text ml-4" v-if="editMode" style = "margin-top:-20px;">
             <v-text-field type="number" label="Price" v-model="value.price"/>

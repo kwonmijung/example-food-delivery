@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: siege
-  namespace: myhotel
+  namespace: mycar
 spec:
   containers:
     - name: siege

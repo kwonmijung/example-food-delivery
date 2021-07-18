@@ -15,10 +15,10 @@
     ></v-img>
 
     <v-card-title v-if="value._links">
-        Room # {{value._links.self.href.split("/")[value._links.self.href.split("/").length - 1]}}
+        Car # {{value._links.self.href.split("/")[value._links.self.href.split("/").length - 1]}}
     </v-card-title >
     <v-card-title v-else>
-        Room
+        Car
     </v-card-title >
 
     <v-card-text style = "margin-left:-15px; margin-top:10px;">
@@ -69,7 +69,7 @@
   const axios = require('axios').default;
 
   export default {
-    name: 'Room',
+    name: 'Car',
     props: {
       value: Object,
       editMode: Boolean,
@@ -88,7 +88,7 @@
           var temp = null;
 
           if(this.isNew){
-            temp = await axios.post(axios.fixUrl('/rooms'), this.value)
+            temp = await axios.post(axios.fixUrl('/cars'), this.value)
           }else{
             temp = await axios.put(axios.fixUrl(this.value._links.self.href), this.value)
           }

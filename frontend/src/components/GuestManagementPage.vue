@@ -27,7 +27,7 @@
             { text: "price", value: "price" },
             { text: "startDate", value: "startDate" },
             { text: "endDate", value: "endDate" },
-            { text: "roomId", value: "roomId" },
+            { text: "carId", value: "carId" },
             { text: "status", value: "status" },
             { text: "payId", value: "payId" },
             { text: "hotelId", value: "hotelId" },

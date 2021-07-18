@@ -2,11 +2,11 @@
 
 <template>
 <div>
-  <h1 style = "margin-left:4.5%; margin-top:-10px; margin-bottom:20px;">Room</h1>
+  <h1 style = "margin-left:4.5%; margin-top:-10px; margin-bottom:20px;">Car</h1>
 
     <v-row>
-        <Room class="video-card" v-for="(value, index) in values" v-model="values[index]" v-bind:key="index" @delete="remove"/>
-        <Room class="video-card" :isNew="true" :editMode="true" v-model="newValue" @add="append"/>
+        <Car class="video-card" v-for="(value, index) in values" v-model="values[index]" v-bind:key="index" @delete="remove"/>
+        <Car class="video-card" :isNew="true" :editMode="true" v-model="newValue" @add="append"/>
     </v-row>
 
 </div>
@@ -15,13 +15,13 @@
 <script>
 
 const axios = require('axios').default;
-import Room from './Room.vue';
+import Car from './Car.vue';
 
 export default {
-  name: 'RoomManager',
+  name: 'CarManager',
 
   components: {
-    Room
+    Car
   },
 
   data: () => ({
@@ -30,9 +30,9 @@ export default {
   }),
 
   async created() {
-      var temp = await axios.get(axios.fixUrl('/rooms'))
+      var temp = await axios.get(axios.fixUrl('/cars'))
 
-      this.values = temp.data._embedded.rooms;
+      this.values = temp.data._embedded.cars;
 
   },
 
