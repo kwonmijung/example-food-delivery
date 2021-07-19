@@ -23,7 +23,6 @@
         headers: [
             { text: "id", value: "id" },
             { text: "bookId", value: "bookId" },
-            { text: "hostId", value: "hostId" },
             { text: "price", value: "price" },
             { text: "startDate", value: "startDate" },
             { text: "endDate", value: "endDate" },

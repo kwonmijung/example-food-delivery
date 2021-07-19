@@ -2,6 +2,8 @@ package kcar_operation;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,10 +27,9 @@ public class Book {
 
     private Long carId;
     private Integer price;
-    private Long hostId;
     private Long guestId;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private String status;
 
     public Long getId() {
@@ -55,14 +56,6 @@ public class Book {
         this.price = price;
     }
 
-    public Long getHostId() {
-        return hostId;
-    }
-
-    public void setHostId(Long hostId) {
-        this.hostId = hostId;
-    }
-
     public Long getGuestId() {
         return guestId;
     }
@@ -71,20 +64,20 @@ public class Book {
         this.guestId = guestId;
     }
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         // System.out.println("--------------------"+startDate);
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 
@@ -109,7 +102,6 @@ public class Book {
             payment.setCarId(getCarId());
             payment.setGuestId(getGuestId());
             payment.setPrice(getPrice());
-            payment.setHostId(getHostId());
             payment.setStartDate(getStartDate());
             payment.setEndDate(getEndDate());
             payment.setStatus("PayApproved");
@@ -118,10 +110,13 @@ public class Book {
 
             // mappings goes here
             try {
+               //  System.out.println("\n\n##### listener  : " + payment.toJson() + "\n\n");
+
+
                  BookApplication.applicationContext.getBean(kcar_operation.external.PaymentService.class)
                     .pay(payment);
             }catch(Exception e) {
-                throw new RuntimeException("-------- 결제서비스 호출 실패입니다.-----------");
+                throw new RuntimeException("-------- 결제서비스 호출 실패-----------");
             }
         }
 
@@ -130,12 +125,18 @@ public class Book {
         BeanUtils.copyProperties(this, booked);
         booked.setStatus("Booked");
         booked.publishAfterCommit();
+        System.out.println("\n\n##### listener  : " + booked.toJson() + "\n\n");
+        System.out.println("==================================================================");
+        System.out.println("================== Booked========================================");
+        System.out.println("==================================================================");
+
     }
 
     @PostRemove
     public void onPostRemove(){
         BookCanceled bookCanceled = new BookCanceled();
         BeanUtils.copyProperties(this, bookCanceled);
+        bookCanceled.setStatus("Canceled");
         bookCanceled.publishAfterCommit();
     }
 

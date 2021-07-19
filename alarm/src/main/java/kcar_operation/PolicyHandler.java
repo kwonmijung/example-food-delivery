@@ -1,12 +1,11 @@
 package kcar_operation;
 
-import kcar_operation.config.kafka.KafkaProcessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+
+import kcar_operation.config.kafka.KafkaProcessor;
 
 @Service
 public class PolicyHandler{
@@ -16,8 +15,12 @@ public class PolicyHandler{
     public void wheneverPaymentApproved_Notify(@Payload PaymentApproved paymentApproved){
 
         if(!paymentApproved.validate()) return;
+        System.out.println("----------------------------------------------------------------------");
+        System.out.println("-- listener Notify 승인완료 : " + paymentApproved.toJson() + "----------");
+        System.out.println("----------------------------------------------------------------------");
 
-        System.out.println("\n\n##### listener Notify : " + paymentApproved.toJson() + "\n\n");
+        // Sample Logic //
+
 
         // Sample Logic //
         Notification notification = new Notification();
@@ -29,9 +32,12 @@ public class PolicyHandler{
 
         if(!paymentCanceled.validate()) return;
 
-        System.out.println("\n\n##### listener Notify : " + paymentCanceled.toJson() + "\n\n");
+        System.out.println("----------------------------------------------------------------------");
+        System.out.println("-- listener Notify 승인실패 : " + paymentCanceled.toJson()+ "----------");
+        System.out.println("----------------------------------------------------------------------");
 
-        // Sample Logic //
+
+
         Notification notification = new Notification();
         notificationRepository.save(notification);
             
@@ -41,8 +47,9 @@ public class PolicyHandler{
 
         if(!bookCanceled.validate()) return;
 
-        System.out.println("\n\n##### listener Notify : " + bookCanceled.toJson() + "\n\n");
-
+        System.out.println("----------------------------------------------------------------------");
+        System.out.println("---listener Notify : 예약 취소 " + bookCanceled.toJson() +    "----------");
+        System.out.println("----------------------------------------------------------------------");
         // Sample Logic //
         Notification notification = new Notification();
         notificationRepository.save(notification);
@@ -53,9 +60,10 @@ public class PolicyHandler{
 
         if(!booked.validate()) return;
 
-        System.out.println("\n\n##### listener Notify : " + booked.toJson() + "\n\n");
+        System.out.println("----------------------------------------------------------------------");
+        System.out.println("---listener Notify : 예약 완료 " + booked.toJson() +    "----------");
+        System.out.println("----------------------------------------------------------------------");
 
-        // Sample Logic //
         Notification notification = new Notification();
         notificationRepository.save(notification);
             

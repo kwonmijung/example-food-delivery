@@ -42,12 +42,6 @@
             Price :  {{value.price }}
           </div>
           <div class="grey--text ml-4" v-if="editMode" style = "margin-top:-20px;">
-            <v-text-field type="number" label="HostId" v-model="value.hostId"/>
-          </div>
-          <div class="grey--text ml-4" v-else>
-            HostId :  {{value.hostId }}
-          </div>
-          <div class="grey--text ml-4" v-if="editMode" style = "margin-top:-20px;">
             <v-text-field type="number" label="GuestId" v-model="value.guestId"/>
           </div>
           <div class="grey--text ml-4" v-else>

@@ -20,9 +20,10 @@ public class AbstractEvent {
 
     public AbstractEvent(){
         this.setEventType(this.getClass().getSimpleName());
-        SimpleDateFormat defaultSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+       // SimpleDateFormat defaultSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        SimpleDateFormat defaultSimpleDateFormat = new SimpleDateFormat("YYYYMMddHHmmss");
         this.timestamp = defaultSimpleDateFormat.format(new Date());
-        System.out.println("날짜"+timestamp);
+        //System.out.println("날짜"+timestamp);
     }
 
     public String toJson(){

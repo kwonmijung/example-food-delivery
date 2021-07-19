@@ -1,9 +1,16 @@
 package kcar_operation;
 
-import javax.persistence.*;
-import org.springframework.beans.BeanUtils;
-import java.util.List;
 import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
+import javax.persistence.Table;
+
+import org.springframework.beans.BeanUtils;
 
 @Entity
 @Table(name="Payment_table")
@@ -15,16 +22,17 @@ public class Payment {
     private Long bookId;
     private Long carId;
     private Integer price;
-    private Long hostId;
     private Long guestId;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private String status;
 
     @PostPersist
     public void onPostPersist(){
         PaymentApproved paymentApproved = new PaymentApproved();
         BeanUtils.copyProperties(this, paymentApproved);
+        System.out.println("\n\n##### listener  : " + paymentApproved.toJson() + "\n\n"); 
+
         paymentApproved.publishAfterCommit();
 
 
@@ -34,6 +42,7 @@ public class Payment {
     public void onPostUpdate(){
         PaymentCanceled paymentCanceled = new PaymentCanceled();
         BeanUtils.copyProperties(this, paymentCanceled);
+        System.out.println("\n\n##### listener  : " + paymentCanceled.toJson() + "\n\n"); 
         paymentCanceled.publishAfterCommit();
 
 
@@ -68,13 +77,6 @@ public class Payment {
     public void setPrice(Integer price) {
         this.price = price;
     }
-    public Long getHostId() {
-        return hostId;
-    }
-
-    public void setHostId(Long hostId) {
-        this.hostId = hostId;
-    }
     public Long getGuestId() {
         return guestId;
     }
@@ -82,18 +84,18 @@ public class Payment {
     public void setGuestId(Long guestId) {
         this.guestId = guestId;
     }
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
     public String getStatus() {

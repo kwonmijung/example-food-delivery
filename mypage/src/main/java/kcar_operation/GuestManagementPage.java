@@ -12,7 +12,6 @@ public class GuestManagementPage {
         @GeneratedValue(strategy=GenerationType.AUTO)
         private Long id;
         private Long bookId;
-        private Long hostId;
         private Integer price;
         private Date startDate;
         private Date endDate;
@@ -36,13 +35,7 @@ public class GuestManagementPage {
         public void setBookId(Long bookId) {
             this.bookId = bookId;
         }
-        public Long getHostId() {
-            return hostId;
-        }
 
-        public void setHostId(Long hostId) {
-            this.hostId = hostId;
-        }
         public Integer getPrice() {
             return price;
         }

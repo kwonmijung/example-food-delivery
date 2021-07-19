@@ -8,10 +8,9 @@ public class Payment {
     private Long bookId;
     private Long carId;
     private Integer price;
-    private Long hostId;
     private Long guestId;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private String status;
 
     public Long getId() {
@@ -38,28 +37,22 @@ public class Payment {
     public void setPrice(Integer price) {
         this.price = price;
     }
-    public Long getHostId() {
-        return hostId;
-    }
-    public void setHostId(Long hostId) {
-        this.hostId = hostId;
-    }
     public Long getGuestId() {
         return guestId;
     }
     public void setGuestId(Long guestId) {
         this.guestId = guestId;
     }
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
     public String getStatus() {
